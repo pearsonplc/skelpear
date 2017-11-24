@@ -1,0 +1,18 @@
+Package: skelpear
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 1.0.0
+Author: Mikolaj Bogucki
+Maintainer: Mikołaj Bogucki <mikolaj.bogucki@pearson.com>
+Description: More about what it does (maybe more than one line)
+License: GPL-2
+Imports:
+  cli (>= 1.0.0),
+  crayon (>= 1.3.4),
+  dplyr (>= 0.7.4),
+  magrittr (>= 1.5),
+  rlang(>= 0.1.4),
+  sessioninfo (>= 1.0.0)
+URL: https://bitbucket.pearson.com/projects/EF/repos/skelpear/browse
+Encoding: UTF-8
+RoxygenNote: 6.0.1
