@@ -1,0 +1,37 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+## Overview
+
+Desrciption of `skelpear` package.
+
+## Installation
+
+First install `pearsonverse` [package](https://bitbucket.pearson.com/projects/EF/repos/pearsonverse/browse). During attaching `pearsonverse`, it installs all `*pear` packages.
+
+```{r, warning = F, eval = F}
+library(pearsonverse)
+```
+
+However, if you want install just `skelpear` package:
+
+```{r, warning = F, eval = F}
+##### CHANGE THIS LINE START #####
+bibucket_login <- "example" 
+##### CHANGE THIS LINE END #######
+
+pearsonverse::install_pkgpear("skelpear", bibucket_login)  
+```
