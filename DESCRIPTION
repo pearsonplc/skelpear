@@ -13,6 +13,7 @@ Imports:
   magrittr (>= 1.5),
   rlang(>= 0.1.4),
   sessioninfo (>= 1.0.0)
-URL: https://bitbucket.pearson.com/projects/EF/repos/skelpear/browse
+URL: https://github.com/pearsonplc/skelpear
+BugReports: https://github.com/pearsonplc/skelpear/issues
 Encoding: UTF-8
 RoxygenNote: 6.0.1
