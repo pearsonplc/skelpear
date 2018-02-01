@@ -4,7 +4,7 @@
 \alias{project_create}
 \title{Create a new ENR project.}
 \usage{
-project_create(project_name = "enr_project", path)
+project_create(project_name = "enr_project", path = ".")
 }
 \arguments{
 \item{project_name}{A character vector containing the name for this new

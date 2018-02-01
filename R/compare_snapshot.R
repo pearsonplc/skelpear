@@ -7,10 +7,10 @@
 #'
 #' @examples
 #' \dontrun{
-#'  compare_snapshot_pkg()
+#'  compare_snapshot()
 #'  }
 
-compare_snapshot_pkg <- function(only_attached = T) {
+compare_snapshot <- function(only_attached = T) {
 
   snapshot_path <- "config/packages.dcf"
 

@@ -11,4 +11,4 @@ library(ProjectTemplate)
 
 load.project()
 
-compare_snapshot_pkg()
+compare_snapshot()

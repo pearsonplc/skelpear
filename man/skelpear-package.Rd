@@ -11,7 +11,8 @@ More about what it does (maybe more than one line)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://bitbucket.pearson.com/projects/EF/repos/skelpear/browse}
+  \item \url{https://github.com/pearsonplc/skelpear}
+  \item Report bugs at \url{https://github.com/pearsonplc/skelpear/issues}
 }
 
 }
