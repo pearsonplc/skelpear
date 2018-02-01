@@ -12,7 +12,13 @@
 
 compare_snapshot_pkg <- function(only_attached = T) {
 
-  snapshot_df <- read.dcf("config/packages.dcf") %>%
+  snapshot_path <- "config/packages.dcf"
+
+  if(!file.exists(snapshot_path)) {
+    return(cli::cat_line("Warning: There is no `packages.dcf` file in your project. Please use `snapshot_pkg` function to save your package environment.", col = "orange"))
+  }
+
+  snapshot_df <- read.dcf(snapshot_path) %>%
     as.data.frame(stringsAsFactors = F)
 
   local_df <- extract_session_info()

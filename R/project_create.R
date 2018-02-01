@@ -14,7 +14,7 @@
 #' \dontrun{project_create('new_enr_project', path = "/"}
 #'
 
-project_create <- function(project_name = 'enr_project', path){
+project_create <- function(project_name = 'enr_project', path = "."){
 
   whole_path <- file.path(path, project_name)
 
