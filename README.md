@@ -2,7 +2,7 @@
 Overview
 --------
 
-Description of `skelpear` package.
+`skelpear` package belongs to the `pearsonverse` - set of packages which facilitates the data science process in R. The mail goal of this package is to support teams via building an identical project environment and maintaining a reproducibility. It depends mainly on `ProjectTemplate` package.
 
 Installation
 ------------
@@ -18,3 +18,13 @@ However, if you want install just `skelpear` package:
 ``` r
 devtools::install_github("pearsonplc/skelpear")
 ```
+
+1st Goal: Builing project environment
+------------
+
+`project_create(project_name, path = ".")` - a function which builds the project skeleton. It contains several pre-defined directories and files.
+
+2nd Goal: Maintaining reproducibility
+------------
+
+`snapshot_pkg()` & `compare_snapshot()` - pair of functions which allows to save and compare set of packages used during the project. It's especially useful when more team members are involved in producing code.
