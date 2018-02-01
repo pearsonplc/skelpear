@@ -22,10 +22,10 @@ compare_snapshot_pkg <- function(only_attached = T) {
     local_df <- only_attached(local_df, attached)
   }
 
-  is_equal <- all_equal(snapshot_df, local_df)
+  is_equal <- dplyr::all_equal(snapshot_df, local_df)
 
   if (isTRUE(is_equal)) {
-    return(invisible())
+    invisible(NULL)
   }
 
   else {
@@ -35,18 +35,11 @@ compare_snapshot_pkg <- function(only_attached = T) {
 
     joined_pkg <- check_version(local_pkg_selected, snapshot_pkg_selected)
 
-    if (only_attached) { joined_pkg <- only_attached(joined_pkg, attached_snapshot) }
+    # if (only_attached) { joined_pkg <- only_attached(joined_pkg, attached_snapshot) }
 
-    # return(joined_pkg)
+    cli::cat_line(snapshot_message(joined_pkg))
+    cli::cat_line(snapshot_message(joined_pkg, crucial = FALSE))
 
-    cli::cat_line("The following packages were loaded in different versions comparing to the snapshot:", col = "orange")
-    cli::cat_line()
-    cli::cat_bullet(format(joined_pkg$package), " (local: ",
-                    joined_pkg$loadedversion_local, " -> snapshot: ",
-                    joined_pkg$loadedversion_snapshot, ")",
-                    col = "orange", bullet_col = "orange")
-
-    invisible()
   }
 
 }
@@ -71,5 +64,45 @@ only_attached <- function(data, col) {
 
   col_name <- dplyr::enquo(col)
   dplyr::filter(data, (!!col_name) == "TRUE")
+}
+
+snapshot_message <- function(data, crucial = TRUE) {
+
+  if (crucial) data <- only_attached(data, attached_snapshot)
+  else data <- only_attached(data, attached_local) %>% dplyr::filter(is.na(attached_snapshot))
+
+  if (nrow(data) == 0) return("")
+
+  header <- cli::rule(
+    left = crayon::bold(ifelse(crucial, "Crucial packages to attach", "Potential packages to save")
+    ),
+    right = ifelse(crucial, "attach/install", "save")
+  )
+
+  funs <- list_pkgs(data, crucial)
+
+  sign <- ifelse(crucial, crayon::red(cli::symbol$cross), crayon::yellow(cli::symbol$star))
+
+  bullets <- paste0(
+    sign, " ", funs,
+    collapse = "\n"
+  )
+
+  paste0(header, "\n", bullets)
+}
+
+list_pkgs <- function(data, crucial = TRUE) {
+  if (crucial) {
+    format(paste0(
+      crayon::red(data$package), " ", crayon::red(data$loadedversion_snapshot),
+      " (", ifelse(is.na(data$loadedversion_local), "nonattached)", paste0("local version: ", data$loadedversion_local, ")"))
+    ))
+  }
+  else {
+    format(
+      paste0(
+        crayon::yellow(data$package), " ", crayon::yellow(data$loadedversion_local))
+    )
+  }
 }
 

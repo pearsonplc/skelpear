@@ -2,7 +2,7 @@
 Overview
 --------
 
-Desrciption of `skelpear` package.
+Description of `skelpear` package.
 
 Installation
 ------------
