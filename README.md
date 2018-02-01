@@ -19,12 +19,13 @@ However, if you want install just `skelpear` package:
 devtools::install_github("pearsonplc/skelpear")
 ```
 
-1st Goal: Builing project environment
+Goals
 ------------
+
+__Builing project environment__
 
 `project_create(project_name, path = ".")` - a function which builds the project skeleton. It contains several pre-defined directories and files.
 
-2nd Goal: Maintaining reproducibility
-------------
+__Maintaining reproducibility__
 
 `snapshot_pkg()` & `compare_snapshot()` - pair of functions which allows to save and compare set of packages used during the project. It's especially useful when more team members are involved in producing code.
