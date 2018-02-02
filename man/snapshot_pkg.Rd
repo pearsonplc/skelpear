@@ -8,6 +8,7 @@ snapshot_pkg()
 }
 \description{
 A function which creates a file with your local session info (all packages you use) in config/packages.dcf file.
+It is so-called `silent function`` i.e. when a function executes successfully, no message shows up.
 }
 \examples{
 \dontrun{

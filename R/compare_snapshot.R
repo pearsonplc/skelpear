@@ -4,15 +4,15 @@
 #' It is so-called `silent function`` i.e. when a function executes successfully, no message shows up.
 #'
 #' @export
-#' @param only_attached if TRUE, it will only compare attached packages.
 #'
 #' @examples
 #' \dontrun{
 #'  compare_snapshot()
 #'  }
 
-compare_snapshot <- function(only_attached = T) {
+compare_snapshot <- function() {
 
+  only_attached <- TRUE
   snapshot_path <- "config/packages.dcf"
 
   if(!file.exists(snapshot_path)) {
@@ -36,19 +36,14 @@ compare_snapshot <- function(only_attached = T) {
   }
 
   else {
-
     snapshot_pkg_selected <- modify_col_name(snapshot_df, "_snapshot")
     local_pkg_selected <- modify_col_name(local_df, "_local")
 
     joined_pkg <- check_version(local_pkg_selected, snapshot_pkg_selected)
 
-    # if (only_attached) { joined_pkg <- only_attached(joined_pkg, attached_snapshot) }
-
     cli::cat_line(snapshot_message(joined_pkg))
     cli::cat_line(snapshot_message(joined_pkg, crucial = FALSE))
-
   }
-
 }
 
 modify_col_name <- function(data,  type) {

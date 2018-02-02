@@ -22,9 +22,9 @@ devtools::install_github("pearsonplc/skelpear")
 Goals
 ------------
 
-__Builing project environment__
+__Building project environment__
 
-`project_create(project_name, path = ".")` - a function which builds the project skeleton. It contains several pre-defined directories and files.
+`project_create(project_name, path = ".")` - a function which builds the project skeleton. It contains several pre-defined directories and files. More info about the role of each components in Pearson Efficacy Analytics Handbook.
 
 __Maintaining reproducibility__
 

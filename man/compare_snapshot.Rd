@@ -4,13 +4,11 @@
 \alias{compare_snapshot}
 \title{Compare your session info with packages stored in `config/packages.dcf`}
 \usage{
-compare_snapshot(only_attached = T)
-}
-\arguments{
-\item{only_attached}{if TRUE, it will only compare attached packages.}
+compare_snapshot()
 }
 \description{
 A function which allows you to compare your set of packages with those stored in `config/packages.dcf` file.
+It is so-called `silent function`` i.e. when a function executes successfully, no message shows up.
 }
 \examples{
 \dontrun{
