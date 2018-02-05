@@ -36,11 +36,9 @@ create_enr_project_existing <- function(project_name, path) {
             project_path,
             recursive = TRUE, overwrite = FALSE)
 
+  git2r::init(path)
+
   create_rproj(project_name, path)
-
-  # packrat::init(project = normalizePath(path, winslash = "/", mustWork = TRUE))
-
-  message(paste0("New directory ", path, " has been created."))
 }
 
 create_enr_project_new <- function(project_name, path) {
@@ -62,6 +60,7 @@ create_rproj <- function(project_name, path) {
 
   invisible(file.copy(template_path, path))
 
+  rstudioapi::openProject(path)
 }
 
 list_files_and_dirs <- function(path) {
