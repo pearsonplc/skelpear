@@ -2,12 +2,13 @@
 % Please edit documentation in R/docker_snapshot.R
 \name{docker_snapshot}
 \alias{docker_snapshot}
-\title{Create a chunk of code with package installation in Dockerfile}
+\title{Create a chunk of code with package installation.}
 \usage{
 docker_snapshot()
 }
 \description{
-Create a chunk of code with package installation in Dockerfile
+A function which creates chunk of code with package installation for Dockerfile. It stores those commands in memory. Just paste it (Cmd + V) to the Dockerfile.
+It is so-called the `silent function`` i.e. when a function executes successfully, no message shows up. Afterwards, you are ready to paste
 }
 \examples{
 \dontrun{

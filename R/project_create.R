@@ -5,27 +5,26 @@
 #' contents.
 #'
 #' @export
-#' @param project_name A character vector containing the name for this new
-#'   project. Must be a valid directory name for your file system.
+#' @param name A project name. Must be a valid directory name for your file system.
 #' @param path A path where you want to store your new project.
 #'
 #' @examples
 #'
-#' \dontrun{project_create('new_enr_project', path = "/"}
+#' \dontrun{project_create(name = "new_enr_project", path = "/"}
 #'
 
-project_create <- function(project_name = 'enr_project', path = "."){
+project_create <- function(name = 'enr_project', path = "."){
 
-  whole_path <- file.path(path, project_name)
+  whole_path <- file.path(path, name)
 
   if (is_dir(whole_path)) {
-    create_enr_project_existing(project_name, whole_path)
+    create_enr_project_existing(name, whole_path)
   } else
-    create_enr_project_new(project_name, whole_path)
+    create_enr_project_new(name, whole_path)
 
 }
 
-create_enr_project_existing <- function(project_name, path) {
+create_enr_project_existing <- function(name, path) {
 
   template_path <- system.file('project_skeleton/', package = 'skelpear')
   template_files <- list_files_and_dirs(path = template_path)
@@ -38,14 +37,14 @@ create_enr_project_existing <- function(project_name, path) {
 
   git2r::init(path)
 
-  create_rproj(project_name, path)
+  create_rproj(name, path)
 }
 
-create_enr_project_new <- function(project_name, path) {
+create_enr_project_new <- function(name, path) {
 
   dir.create(path)
   tryCatch(
-    create_enr_project_existing(project_name = project_name, path = path),
+    create_enr_project_existing(name = name, path = path),
     error = function(e) {
       unlink(path, recursive = TRUE)
       stop(e)
@@ -53,8 +52,8 @@ create_enr_project_new <- function(project_name, path) {
   )
 }
 
-create_rproj <- function(project_name, path) {
-  path <- file.path(path, paste0(project_name, ".Rproj"))
+create_rproj <- function(name, path) {
+  path <- file.path(path, paste0(name, ".Rproj"))
   template_path <- system.file("templates/template.Rproj",
                                package = "devtools")
 
