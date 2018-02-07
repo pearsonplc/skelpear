@@ -62,12 +62,6 @@ check_version <- function(local_data, snapshot_data) {
     dplyr::filter(check_version == FALSE)
 }
 
-only_attached <- function(data, col) {
-
-  col_name <- dplyr::enquo(col)
-  dplyr::filter(data, (!!col_name) == "TRUE")
-}
-
 snapshot_message <- function(data, crucial = TRUE) {
 
   if (crucial) data <- only_attached(data, attached_snapshot)
