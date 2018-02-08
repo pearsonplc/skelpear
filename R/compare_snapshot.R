@@ -36,38 +36,42 @@ compare_snapshot <- function() {
   }
 
   else {
-    snapshot_pkg_selected <- modify_col_name(snapshot_df, "_snapshot")
-    local_pkg_selected <- modify_col_name(local_df, "_local")
 
-    joined_pkg <- check_version(local_pkg_selected, snapshot_pkg_selected)
+    joined_pkg <- check_version(local_df, snapshot_df)
 
     cli::cat_line(snapshot_message(joined_pkg))
     cli::cat_line(snapshot_message(joined_pkg, crucial = FALSE))
   }
 }
 
-modify_col_name <- function(data,  type) {
+check_version <- function(local_data, snapshot_data) {
 
-  dplyr::rename_at(data,
-                   dplyr::vars(loadedversion, attached),
-                   dplyr::funs(paste0(., type)))
+  snapshot_pkg <- modify_col_name(snapshot_data, "_sp")
+  local_pkg <- modify_col_name(local_data, "_lc")
+
+  local_pkg %>%
+    dplyr::full_join(snapshot_pkg, by = "package") %>%
+    dplyr::mutate(
+      check_v = dplyr::case_when(
+        version_lc == version_sp ~ TRUE,
+        TRUE ~ FALSE
+      )) %>%
+    dplyr::filter(check_v == FALSE)
 }
 
-check_version <- function(local_data, snapshot_data) {
-  local_data %>%
-    dplyr::full_join(snapshot_data, by = "package") %>%
-    dplyr::mutate(check_version = dplyr::case_when(
-      loadedversion_local == loadedversion_snapshot ~ TRUE,
-      TRUE ~ FALSE)) %>%
-    dplyr::filter(check_version == FALSE)
+modify_col_name <- function(data, type) {
+
+  dplyr::rename_at(data,
+                   dplyr::vars(-package),
+                   dplyr::funs(paste0(., type)))
 }
 
 snapshot_message <- function(data, crucial = TRUE) {
 
-  if (crucial) data <- only_attached(data, attached_snapshot)
-  else data <- only_attached(data, attached_local) %>% dplyr::filter(is.na(attached_snapshot))
+  if (crucial) data <- only_attached(data, attached_sp)
+  else data <- only_attached(data, attached_lc) %>% dplyr::filter(is.na(attached_sp))
 
-  if (nrow(data) == 0) return("")
+  if (nrow(data) == 0) invisible(NULL)
 
   header <- cli::rule(
     left = crayon::bold(ifelse(crucial, "Crucial packages to attach", "Potential packages to save")
@@ -90,14 +94,14 @@ snapshot_message <- function(data, crucial = TRUE) {
 list_pkgs <- function(data, crucial = TRUE) {
   if (crucial) {
     format(paste0(
-      crayon::red(data$package), " ", crayon::red(data$loadedversion_snapshot),
-      " (", ifelse(is.na(data$loadedversion_local), "nonattached)", paste0("local version: ", data$loadedversion_local, ")"))
+      crayon::red(data$package), " ", crayon::red(data$version_sp),
+      " (", ifelse(is.na(data$version_lc), "nonattached)", paste0("local version: ", data$version_lc, ")"))
     ))
   }
   else {
     format(
       paste0(
-        crayon::yellow(data$package), " ", crayon::yellow(data$loadedversion_local))
+        crayon::yellow(data$package), " ", crayon::yellow(data$version_lc))
     )
   }
 }

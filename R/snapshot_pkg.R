@@ -13,9 +13,11 @@
 snapshot_pkg <- function() {
 
   attach_pkg <- extract_session_info()
+  # script_pkgs <- extract_script()
 
   if (!dir.exists("config")) { dir.create("config") }
 
   write.dcf(attach_pkg, file = file.path("config", "packages.dcf"))
+  # write.dcf(script_pkgs, file = file.path("config", "packages_src.dcf"))
 }
 
