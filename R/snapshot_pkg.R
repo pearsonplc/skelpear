@@ -11,13 +11,23 @@
 
 
 snapshot_pkg <- function() {
+  used_pkgs <- scour_script()
 
-  attach_pkg <- extract_session_info()
-  # script_pkgs <- extract_script()
+  not_install <- any(is.na(used_pkgs$version))
 
-  if (!dir.exists("config")) { dir.create("config") }
+  # Condition when some package are not installed
+  if (not_install) {
+    return(
+      cli::cat_line(
+        "Warning: There is at least one package which is not installed in local environment. Please install it and then `snapshot_pkg()` again.",
+        col = "orange"
+      )
+    )
+  }
 
-  write.dcf(attach_pkg, file = file.path("config", "packages.dcf"))
-  # write.dcf(script_pkgs, file = file.path("config", "packages_src.dcf"))
+  if (!dir.exists("config")) {
+    dir.create("config")
+  }
+
+  write.dcf(used_pkgs, file = file.path("config", "packages.dcf"))
 }
-

@@ -10,16 +10,11 @@ extract_session_info <- function() {
   return(attach_pkg)
 }
 
-only_attached <- function(data, col) {
-
-  col_name <- dplyr::enquo(col)
-  dplyr::filter(data, (!!col_name) == "TRUE")
-}
-
-extract_script <- function() {
+scour_script <- function() {
 
   dir <- normalizePath(".", winslash = '/')
-  pattern <- "[.](?:r)$"
+  # pattern <- "[.](?:r|rmd)$|global.dcf"
+  pattern <- "[.](?:r)$|global.dcf"
 
   pkgs <- character()
 
@@ -29,25 +24,67 @@ extract_script <- function() {
                         recursive = TRUE
   )
 
+  packratDirRegex <- "(?:^|/)packrat"
+  R_files <- grep(packratDirRegex, R_files, invert = TRUE, value = TRUE)
+
   sapply(R_files, function(file) {
     filePath <- file.path(dir, file)
-    pkgs <<- append(pkgs, packrat:::fileDependencies(file.path(dir, file)))
+    pkgs <<- append(pkgs, fileDependencies(file.path(dir, file)))
 
   })
 
-  pkgs <- packrat:::dropSystemPackages(pkgs)
-
-  pkgs <- extract_pkg_info(pkgs)
+  pkgs <- unique(pkgs) %>% extract_pkg_info()
 
   return(pkgs)
 
 }
 
 extract_pkg_info <- function(pkgs) {
+
   packinfo <- installed.packages(fields = c("Package", "Version"))
 
-  pkgs_mat <- packinfo[pkgs, c("Package", "Version")]
-  colnames(pkgs_mat) <- tolower(colnames(pkgs_mat))
+  must_pkgs <- pkgs %in% packinfo
 
-  return(pkgs_mat)
+  # Condition when some package are not installed
+  if (!all(must_pkgs)) {
+    to_install <- data.frame(Package = pkgs[must_pkgs == FALSE])
+  }
+  else {
+    to_install <- data.frame()
+  }
+
+  pkgs <- pkgs[must_pkgs == TRUE]
+
+  pkgs_df <- packinfo[pkgs, c("Package", "Version")] %>%
+    as.data.frame() %>%
+    dplyr::bind_rows(to_install) %>%
+    dplyr::rename_all(tolower)
+
+  return(pkgs_df)
+}
+
+fileDependencies <- function(file) {
+  file <- normalizePath(file, winslash = "/", mustWork = TRUE)
+  fileext <- tolower(gsub(".*\\.", "", file))
+  switch(fileext,
+         r = packrat:::fileDependencies.R(file),
+         rmd = packrat:::fileDependencies.Rmd(file),
+         dcf = fileDependencies.dcf(file),
+         stop("Unrecognized file type '", file, "'")
+  )
+}
+
+fileDependencies.dcf <- function(file) {
+
+  if (!file.exists(file)) {
+    warning("No file at path '", file, "'.")
+    return(character())
+  }
+
+  pkgs <- character()
+  dcf <- read.dcf("config/global.dcf") %>% as.data.frame()
+  pkgs <- append(pkgs, strsplit(dcf$libraries, '\\s*,\\s*')[[1]])
+
+  setdiff(unique(pkgs), "")
+
 }
