@@ -8,7 +8,7 @@ munging: TRUE
 logging: FALSE
 logging_level: INFO
 load_libraries: TRUE
-libraries: pearsonverse, tidyverse, scales, extrafont, stringi, rmarkdown, bindrcpp
+libraries: tidyverse, ggplot2, pearsonverse, scales, extrafont, stringi, rmarkdown, bindrcpp
 as_factors: FALSE
 data_tables: FALSE
 attach_internal_libraries: FALSE

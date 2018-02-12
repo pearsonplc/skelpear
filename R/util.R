@@ -1,15 +1,4 @@
 
-extract_session_info <- function() {
-
-  sinfo <- sessioninfo::package_info()
-  attach_pkg <- sinfo %>%
-    dplyr::select(package, loadedversion, attached, source) %>%
-    dplyr::rename(version = loadedversion) %>%
-    dplyr::mutate_all(as.character)
-
-  return(attach_pkg)
-}
-
 scour_script <- function() {
 
   dir <- normalizePath(".", winslash = '/')
@@ -82,7 +71,7 @@ fileDependencies.dcf <- function(file) {
   }
 
   pkgs <- character()
-  dcf <- read.dcf("config/global.dcf") %>% as.data.frame()
+  dcf <- read.dcf("config/global.dcf") %>% as.data.frame(stringsAsFactors = F)
   pkgs <- append(pkgs, strsplit(dcf$libraries, '\\s*,\\s*')[[1]])
 
   setdiff(unique(pkgs), "")

@@ -2,13 +2,10 @@
 library(stats)
 library(utils)
 
+inst <- "ProjectTemplate" %in% installed.packages()
 
-if (!require(ProjectTemplate)) {
-    install.packages("ProjectTemplate",  repos = 'https://cran.rstudio.com/')
-}
+if (!inst) install.packages("ProjectTemplate", repos = "https://cran.rstudio.com/")
 
-library(ProjectTemplate)
-
-load.project()
+ProjectTemplate::load.project()
 
 compare_snapshot()
