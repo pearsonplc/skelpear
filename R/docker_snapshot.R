@@ -10,20 +10,14 @@
 #'  }
 
 docker_snapshot <- function() {
-  snapshot_path <- "config/packages.dcf"
+  sp_path <- "config/packages.dcf"
 
-  if (!file.exists(snapshot_path)) {
-    return(
-      cli::cat_line(
-        "Warning: There is no `packages.dcf` file in your project. Please use `snapshot_pkg` function to save your package environment.",
-        col = "orange"
-      )
-    )
-
+  if (!file.exists(sp_path)) {
+    stop(no_file_message(sp_path), call. = F)
   }
 
-  load_pkgs <- read.dcf(snapshot_path) %>%
-    as.data.frame(stringsAsFactors = F) %>%
+  load_pkgs <- read.dcf(sp_path) %>%
+    dplyr::as_data_frame() %>%
     dplyr::pull(package)
 
   snapshot_df <- load_pkgs %>%
@@ -66,14 +60,14 @@ create_docker_cmd <- function(pkg, data) {
 
   if (is_cran) {
     sprintf(
-      '%s devtools::install_version("%s", version = "%s", repos = "https://cran.rstudio.com/")',
+      "%s \"devtools::install_version('%s', version = '%s', repos = 'https://cran.rstudio.com/')\"",
       docker_init,
       pkg,
       data$loadedversion
     )
   }
   else {
-    sprintf('%s devtools::install_github("%s")',
+    sprintf("%s \"devtools::install_github('%s')\"",
             docker_init,
             github_source)
   }

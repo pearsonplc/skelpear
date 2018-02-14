@@ -11,21 +11,15 @@
 #'  }
 
 compare_snapshot <- function() {
-  path <- file.path("config", "packages.dcf")
+  sp_path <- file.path("config", "packages.dcf")
 
-  if (!file.exists(path)) {
-    return(cli::cat_line(
-      sprintf(
-        "Warning: There is no `%s` file in your project. Please use `snapshot_pkg` function to save your package environment.",
-        path
-      ),
-      col = "orange"
-    ))
+  if (!file.exists(sp_path)) {
+    stop(no_file_message(sp_path), call. = F)
   }
 
   # load snapshot envir
-  snapshot_df <- read.dcf(path) %>%
-    as.data.frame(stringsAsFactors = F)
+  snapshot_df <- read.dcf(sp_path) %>%
+    dplyr::as_data_frame()
 
   # detect local envir
   local_df <- scour_script()
@@ -33,15 +27,13 @@ compare_snapshot <- function() {
   # compare both envirs
   is_equal <- dplyr::all_equal(snapshot_df, local_df)
 
-  if (isTRUE(is_equal)) {
-    invisible(NULL)
-  }
-
-  else {
+  if (!isTRUE(is_equal)) {
     check_version(local_df, snapshot_df) %>%
       purrr::map2(., names(.), show_message) %>%
       cli::cat_line()
   }
+
+  invisible(NULL)
 }
 
 check_version <- function(local_data, snapshot_data) {

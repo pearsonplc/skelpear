@@ -1,4 +1,11 @@
 
+no_file_message <- function(path) {
+  sprintf(
+    "There is no `%s` file in your project. Please use `snapshot_pkg` function to save your package environment.",
+    path
+  )
+}
+
 scour_script <- function() {
 
   dir <- normalizePath(".", winslash = '/')
@@ -36,16 +43,16 @@ extract_pkg_info <- function(pkgs) {
 
   # Condition when some package are not installed
   if (!all(must_pkgs)) {
-    to_install <- data.frame(Package = pkgs[must_pkgs == FALSE])
+    to_install <- dplyr::data_frame(Package = pkgs[must_pkgs == FALSE])
   }
   else {
-    to_install <- data.frame()
+    to_install <- dplyr::data_frame()
   }
 
   pkgs <- pkgs[must_pkgs == TRUE]
 
   pkgs_df <- packinfo[pkgs, c("Package", "Version")] %>%
-    as.data.frame() %>%
+    dplyr::as_data_frame() %>%
     dplyr::bind_rows(to_install) %>%
     dplyr::rename_all(tolower)
 
@@ -71,7 +78,7 @@ fileDependencies.dcf <- function(file) {
   }
 
   pkgs <- character()
-  dcf <- read.dcf("config/global.dcf") %>% as.data.frame(stringsAsFactors = F)
+  dcf <- read.dcf(file) %>% dplyr::as_data_frame()
   pkgs <- append(pkgs, strsplit(dcf$libraries, '\\s*,\\s*')[[1]])
 
   setdiff(unique(pkgs), "")
