@@ -49,20 +49,27 @@ After that, you're ready to push your commit/s.
 
 A pair of functions which allows to save and compare set of packages used during the project. It's especially useful when more team members are involved in code development.
 
-The `snapshot_pkg()` function saves the package environment in `config/packages.dcf` file. Once you push it to the bitbucket repository, anybody can pull it and compare to the local package envrionment via `compare_snapshot` function.
+The `snapshot_pkg()` function saves the package environment in `config/packages.dcf` file. It looks thorugh all R scripts and `config/global.dcf` within a project to find an execution of `library`, `require` or `::`. Once you push it to the bitbucket repository, anybody can pull it and compare to the local package envrionment via `compare_snapshot` function.
+
+Both functions return a message only when snapshot process fails. Below the local environment is identical with the snapshot.
+
+![](https://raw.githubusercontent.com/pearsonplc/skelpear/new_compare_snapshot/inst/img/snapshot_no_message.png)
 
 __How to read `compare_snapshot` summary__
 
-![plot](https://raw.githubusercontent.com/pearsonplc/skelpear/master/inst/img/compare_snapshot.png)
+![](https://raw.githubusercontent.com/pearsonplc/skelpear/new_compare_snapshot/inst/img/compare_snapshot.png)
 
-The summary consists of two sections:
+The summary consists of three sections:
 
-- Crucial packages to attach
-- Potential packages to save
+- Packages to install
+- Packages to reinstall
+- Packages to save
 
-__Crucial packages to attach__ section is a list of packages which either were not attached (but they should be) or have different version. In following example, dplyr 0.7.4 was attached in your local environment, but one of your colleagues saves dplyr 0.7.2 in `config/packages.dcf`. You should decide together which dplyr version you want to use.
+__Packages to install__ section lists packages which are not installed locally but are critical to the project.
 
-__Potential packages to save__ section is a list of packages which were attached in your local environment but have not been included in `config/packages.dcf` yet. You can do it by executing `snapshot_pkg` function. But __be careful__, first you have to solve all conflicts on the _crucial packages to attach_ section.
+__Packages to reinstall__ section lists packages which have different version in local environment than in `config/pacakges.dcf`. In following example, `dplyr v0.7.4` was detected in your local environment, but one of your colleagues uses `dplyr v0.7.2`. You should decide together which `dplyr` version you want to use.
+
+__Packages to save__ section lists packages which were detected in your local environment but have not been included in `config/packages.dcf` yet. You can include them by executing `snapshot_pkg()` function. But __be careful__, first you have to solve all conflicts on the first two sections.
 
 #### 2.2 _docker_snapshot()_
 

@@ -127,9 +127,9 @@ format_message <- function(data, what, fun) {
 
 skel_title <- function(what) {
   switch(what,
-         "install" = "Package/s to install",
-         "reinstall" = "Package to reinstall",
-         "save" = "Package to save")
+         "install" = "Packages to install",
+         "reinstall" = "Packages to reinstall",
+         "save" = "Packages to save")
 }
 
 skel_symbol <- function(what) {
