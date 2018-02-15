@@ -37,24 +37,22 @@ scour_script <- function() {
 
 extract_pkg_info <- function(pkgs) {
 
-  packinfo <- installed.packages(fields = c("Package", "Version"))
+  packinfo <- utils::installed.packages(fields = c("Package", "Version"))
 
   must_pkgs <- pkgs %in% packinfo
 
   # Condition when some package are not installed
-  if (!all(must_pkgs)) {
-    to_install <- dplyr::data_frame(Package = pkgs[must_pkgs == FALSE])
-  }
-  else {
-    to_install <- dplyr::data_frame()
-  }
+  if (!all(must_pkgs))
+    to_install <- dplyr::data_frame(package = pkgs[must_pkgs == FALSE])
 
   pkgs <- pkgs[must_pkgs == TRUE]
 
   pkgs_df <- packinfo[pkgs, c("Package", "Version")] %>%
     dplyr::as_data_frame() %>%
-    dplyr::bind_rows(to_install) %>%
     dplyr::rename_all(tolower)
+
+  if (exists("to_install"))
+    pkgs_df <- dplyr::bind_rows(pkgs_df, to_install)
 
   return(pkgs_df)
 }
@@ -83,4 +81,77 @@ fileDependencies.dcf <- function(file) {
 
   setdiff(unique(pkgs), "")
 
+}
+
+show_message <- function(data, what) {
+  skel_message(
+    data,
+    what = what,
+    title = skel_title(what),
+    symbol = skel_symbol(what),
+    fun = skel_color(what)
+  )
+}
+
+skel_message <- function(data, what, title = NULL, symbol = NULL, fun = crayon::white) {
+  if (nrow(data) == 0)
+    invisible(NULL)
+
+  header <- ifelse(is.null(title), "", cli::rule(left = crayon::bold(title),
+                      right = what))
+
+  content <- format_message(data, what, fun)
+
+  symbol <- do.call(fun, list(symbol))
+
+  bullets <- paste0(symbol, " ", content,
+                    collapse = "\n")
+
+  paste0(header, "\n", bullets)
+
+}
+
+format_message <- function(data, what, fun) {
+  args <- data %>% {
+    switch(
+      what,
+      snapshot = .$package,
+      install = paste0(.$package, " ", .$version_sp),
+      reinstall = paste0(.$package, " ", .$version_sp, " (local: ", .$version_lc, ")"),
+      save = paste0(.$package, " ", .$version_lc)
+    )
+  }
+
+  do.call(fun, list(args)) %>% format()
+}
+
+skel_title <- function(what) {
+  switch(what,
+         "install" = "Package/s to install",
+         "reinstall" = "Package to reinstall",
+         "save" = "Package to save")
+}
+
+skel_symbol <- function(what) {
+  switch(
+    what,
+    "install" = cli::symbol$cross,
+    "reinstall" = cli::symbol$cross,
+    "save" = cli::symbol$star
+  )
+}
+
+skel_color <-  function(what) {
+  switch(
+    what,
+    "install" = crayon::red,
+    "reinstall" = crayon::red,
+    "save" = crayon::yellow
+  )
+}
+
+show_uninst_pkgs <- function(data, intro, what) {
+    pkgs <- skel_message(data, what)
+    intro <- crayon::red(intro)
+    message(intro, pkgs)
 }

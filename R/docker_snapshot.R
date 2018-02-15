@@ -9,6 +9,9 @@
 #'  snapshot_pkg()
 #'  }
 
+utils::globalVariables("package")
+utils::globalVariables("cmds")
+
 docker_snapshot <- function() {
   sp_path <- "config/packages.dcf"
 
@@ -16,38 +19,28 @@ docker_snapshot <- function() {
     stop(no_file_message(sp_path), call. = F)
   }
 
-  load_pkgs <- read.dcf(sp_path) %>%
-    dplyr::as_data_frame() %>%
-    dplyr::pull(package)
+  # extract information about package source (either CRAN or github)
+  snapshot_df <- extract_source(sp_path)
 
-  snapshot_df <- load_pkgs %>%
-    sessioninfo::package_info() %>%
-    dplyr::filter(package %in% load_pkgs) %>%
-    dplyr::select(package, loadedversion, source)
+  # check if any package was installed from local/Biocundor source
+  app_source_ckeck <- any(snapshot_df$source %in% c("Bioconductor", "local"))
 
+  if (app_source_ckeck) {
 
-  if (any(snapshot_df$source %in% c("Bioconductor", "local"))) {
-    list_pkgs <- snapshot_df %>%
-      dplyr::filter(source %in% c("Bioconductor", "local")) %>%
-      dplyr::pull(package) %>%
-      paste(., collapse = "`, `")
+    data <- dplyr::filter(snapshot_df, source %in% c("Bioconductor", "local"))
+    text <- "Error: Package/s listed below come from local/Bioconductor source. Define packages only from CRAN/github source."
 
-    return(cli::cat_line(
-      paste0(
-        "Error: `",
-        list_pkgs,
-        "` package/s come from local/Bioconductor source. Please define packages only from CRAN/github source."
-      ),
-      col = "red"
-    ))
+    return(show_uninst_pkgs(data, text, "install"))
   }
 
+  # create docker commands
   docker_cmds <- snapshot_df %>%
     dplyr::group_by(package) %>%
     tidyr::nest() %>%
     dplyr::mutate(cmds = purrr::map2_chr(package, data, ~ create_docker_cmd(.x, .y))) %>%
     dplyr::pull(cmds)
 
+  # copy docker commands to clipboard
   clipr::write_clip(docker_cmds)
 
 }
@@ -63,7 +56,7 @@ create_docker_cmd <- function(pkg, data) {
       "%s \"devtools::install_version('%s', version = '%s', repos = 'https://cran.rstudio.com/')\"",
       docker_init,
       pkg,
-      data$loadedversion
+      data$version_sp
     )
   }
   else {
@@ -71,4 +64,18 @@ create_docker_cmd <- function(pkg, data) {
             docker_init,
             github_source)
   }
+}
+
+utils::globalVariables("package")
+utils::globalVariables("loadedversion")
+extract_source <- function(path) {
+
+  loaded_pkgs <- read.dcf(path)[,"package"]
+
+
+  loaded_pkgs %>%
+    sessioninfo::package_info() %>%
+    dplyr::filter(package %in% loaded_pkgs) %>%
+    dplyr::select(package, loadedversion, source) %>%
+    dplyr::rename(version_sp = loadedversion)
 }

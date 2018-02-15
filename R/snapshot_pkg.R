@@ -11,18 +11,19 @@
 
 
 snapshot_pkg <- function() {
+
+  # detect all packages attached in a project
   used_pkgs <- scour_script()
 
-  not_install <- any(is.na(used_pkgs$version))
+  # check if any  package is not installed locally
+  noninstall_check <- any(is.na(used_pkgs$version))
 
-  # Condition when some package are not installed
-  if (not_install) {
-    return(
-      cli::cat_line(
-        "Warning: There is at least one package which is not installed in local environment. Please install it and then `snapshot_pkg()` again.",
-        col = "orange"
-      )
-    )
+  if (noninstall_check) {
+
+    data <- dplyr::filter(used_pkgs, is.na(version))
+    text <- "Error: Package/s listed below are not installed locally. Intall & `snapshot_pkg()` them again."
+
+    return(show_uninst_pkgs(data, text, "snapshot"))
   }
 
   if (!dir.exists("config")) {

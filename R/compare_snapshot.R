@@ -10,6 +10,8 @@
 #'  compare_snapshot()
 #'  }
 
+utils::globalVariables(".")
+
 compare_snapshot <- function() {
   sp_path <- file.path("config", "packages.dcf")
 
@@ -36,6 +38,8 @@ compare_snapshot <- function() {
   invisible(NULL)
 }
 
+utils::globalVariables("check_v")
+
 check_version <- function(local_data, snapshot_data) {
   # modify tables before merging
   snapshot_pkg <- modify_col_name(snapshot_data, "_sp")
@@ -53,6 +57,9 @@ check_version <- function(local_data, snapshot_data) {
 
 }
 
+utils::globalVariables("info")
+utils::globalVariables(".")
+
 # divide message into separated data.frame
 divide_message <- function(data) {
   data %>%
@@ -65,74 +72,10 @@ divide_message <- function(data) {
     split(., .$info)
 }
 
+utils::globalVariables("package")
+
 modify_col_name <- function(data, type) {
   dplyr::rename_at(data,
                    dplyr::vars(-package),
                    dplyr::funs(paste0(., type)))
-}
-
-show_message <- function(data, what) {
-  skel_message(
-    data,
-    what = what,
-    title = skel_title(what),
-    symbol = skel_symbol(what),
-    fun = skel_color(what)
-  )
-}
-
-skel_message <- function(data, title, subtitle, symbol, what, fun) {
-  if (nrow(data) == 0)
-    invisible(NULL)
-
-  header <- cli::rule(left = crayon::bold(title),
-                      right = what)
-
-  content <- format_message(data, what, fun)
-
-  symbol <- do.call(fun, list(symbol))
-
-  bullets <- paste0(symbol, " ", content,
-                    collapse = "\n")
-
-  paste0(header, "\n", bullets)
-
-}
-
-format_message <- function(data, what, fun) {
-  args <- data %>% {
-    switch(
-      what,
-      install = paste0(.$package, " ", .$version_sp),
-      reinstall = paste0(.$package, " ", .$version_sp, " (local: ", .$version_lc, ")"),
-      save = paste0(.$package, " ", .$version_lc)
-    )
-  }
-
-  do.call(fun, list(args)) %>% format()
-}
-
-skel_title <- function(what) {
-  switch(what,
-         "install" = "Package/s to install",
-         "reinstall" = "Package to reinstall",
-         "save" = "Package to save")
-}
-
-skel_symbol <- function(what) {
-  switch(
-    what,
-    "install" = cli::symbol$cross,
-    "reinstall" = cli::symbol$cross,
-    "save" = cli::symbol$star
-  )
-}
-
-skel_color <-  function(what) {
-  switch(
-    what,
-    "install" = crayon::red,
-    "reinstall" = crayon::red,
-    "save" = crayon::yellow
-  )
 }

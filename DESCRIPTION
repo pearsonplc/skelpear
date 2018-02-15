@@ -1,10 +1,10 @@
 Package: skelpear
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 1.0.0
+Title: Skelpear is a part of Pearsonverse
+Version: 1.1.0
 Author: Mikolaj Bogucki
 Maintainer: Mikołaj Bogucki <mikolaj.bogucki@pearson.com>
-Description: More about what it does (maybe more than one line)
+Description: Package for building standardised project environment that facilitates collaboration.
 License: GPL-2
 Imports:
   cli (>= 1.0.0),
@@ -13,11 +13,13 @@ Imports:
   dplyr (>= 0.7.4),
   git2r (>= 0.19.0),
   magrittr (>= 1.5),
+  packrat (>= 0.4.8-1),
   purrr (>= 0.2.4),
   rlang(>= 0.1.4),
   rstudioapi (>= 0.7),
   sessioninfo (>= 1.0.0),
-  tidyr (>= 0.7.2)
+  tidyr (>= 0.7.2),
+  utils
 URL: https://github.com/pearsonplc/skelpear
 BugReports: https://github.com/pearsonplc/skelpear/issues
 Encoding: UTF-8
