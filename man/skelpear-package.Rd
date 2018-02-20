@@ -4,9 +4,9 @@
 \name{skelpear-package}
 \alias{skelpear}
 \alias{skelpear-package}
-\title{skelpear: What the Package Does (Title Case)}
+\title{skelpear: Skelpear is a part of Pearsonverse}
 \description{
-More about what it does (maybe more than one line)
+Package for building standardised project environment that facilitates collaboration.
 }
 \seealso{
 Useful links:

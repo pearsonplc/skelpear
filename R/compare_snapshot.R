@@ -4,13 +4,10 @@
 #' It is so-called `silent function`` i.e. when a function executes successfully, no message shows up.
 #'
 #' @export
-#'
 #' @examples
 #' \dontrun{
 #'  compare_snapshot()
 #'  }
-
-utils::globalVariables(".")
 
 compare_snapshot <- function() {
   sp_path <- file.path("config", "packages.dcf")
@@ -38,6 +35,7 @@ compare_snapshot <- function() {
   invisible(NULL)
 }
 
+utils::globalVariables(".")
 utils::globalVariables("check_v")
 
 check_version <- function(local_data, snapshot_data) {

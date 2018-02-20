@@ -14,6 +14,5 @@ if (!inst) install.packages("ProjectTemplate", repos = "https://cran.rstudio.com
 
 .First <- function(){
   ProjectTemplate::load.project()
+  compare_snapshot()
 }
-
-compare_snapshot()

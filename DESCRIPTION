@@ -1,7 +1,7 @@
 Package: skelpear
 Type: Package
 Title: Skelpear is a part of Pearsonverse
-Version: 1.1.0
+Version: 1.1.1
 Author: Mikolaj Bogucki
 Maintainer: Mikołaj Bogucki <mikolaj.bogucki@pearson.com>
 Description: Package for building standardised project environment that facilitates collaboration.
@@ -14,6 +14,7 @@ Imports:
   git2r (>= 0.19.0),
   magrittr (>= 1.5),
   packrat (>= 0.4.8-1),
+  ProjectTemplate (>= 0.8),
   purrr (>= 0.2.4),
   rlang(>= 0.1.4),
   rstudioapi (>= 0.7),

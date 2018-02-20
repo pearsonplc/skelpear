@@ -9,9 +9,6 @@
 #'  snapshot_pkg()
 #'  }
 
-utils::globalVariables("package")
-utils::globalVariables("cmds")
-
 docker_snapshot <- function() {
   sp_path <- "config/packages.dcf"
 
@@ -44,6 +41,9 @@ docker_snapshot <- function() {
   clipr::write_clip(docker_cmds)
 
 }
+
+utils::globalVariables("package")
+utils::globalVariables("cmds")
 
 create_docker_cmd <- function(pkg, data) {
   is_cran <- ifelse(grepl("CRAN|cran", data$source), TRUE, FALSE)
