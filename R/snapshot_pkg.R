@@ -12,10 +12,23 @@
 
 snapshot_pkg <- function() {
 
-  attach_pkg <- extract_session_info()
+  # detect all packages attached in a project
+  used_pkgs <- scour_script()
 
-  if (!dir.exists("config")) { dir.create("config") }
+  # check if any  package is not installed locally
+  noninstall_check <- any(is.na(used_pkgs$version))
 
-  write.dcf(attach_pkg, file = file.path("config", "packages.dcf"))
+  if (noninstall_check) {
+
+    data <- dplyr::filter(used_pkgs, is.na(version))
+    text <- "Error: Package/s listed below are not installed locally. Intall & `snapshot_pkg()` them again."
+
+    return(show_uninst_pkgs(data, text, "snapshot"))
+  }
+
+  if (!dir.exists("config")) {
+    dir.create("config")
+  }
+
+  write.dcf(used_pkgs, file = file.path("config", "packages.dcf"))
 }
-

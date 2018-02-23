@@ -10,31 +10,40 @@
 #'  }
 
 docker_snapshot <- function() {
+  sp_path <- "config/packages.dcf"
 
-  snapshot_path <- "config/packages.dcf"
-
-  if (!file.exists(snapshot_path)) {
-    return(cli::cat_line("Warning: There is no `packages.dcf` file in your project. Please use `snapshot_pkg` function to save your package environment.", col = "orange"))
-
+  if (!file.exists(sp_path)) {
+    stop(no_file_message(sp_path), call. = F)
   }
 
-  snapshot_df <- read.dcf(snapshot_path) %>%
-    as.data.frame(stringsAsFactors = F) %>%
-    only_attached(attached)
+  # extract information about package source (either CRAN or github)
+  snapshot_df <- extract_source(sp_path)
 
-  if (any(snapshot_df$source %in% c("Bioconductor", "local"))) {
-    return(cli::cat_line("Error: There is at least one attached package from local/Bioconductor source. Please define packages only from CRAN/github source.", col = "red"))
+  # check if any package was installed from local/Biocundor source
+  app_source_ckeck <- any(snapshot_df$source %in% c("Bioconductor", "local"))
+
+  if (app_source_ckeck) {
+
+    data <- dplyr::filter(snapshot_df, source %in% c("Bioconductor", "local"))
+    text <- "Error: Package/s listed below come from local/Bioconductor source. Define packages only from CRAN/github source."
+
+    return(show_uninst_pkgs(data, text, "install"))
   }
 
+  # create docker commands
   docker_cmds <- snapshot_df %>%
     dplyr::group_by(package) %>%
     tidyr::nest() %>%
-    dplyr::mutate(cmds = purrr::map2_chr(package, data, ~create_docker_cmd(.x, .y))) %>%
+    dplyr::mutate(cmds = purrr::map2_chr(package, data, ~ create_docker_cmd(.x, .y))) %>%
     dplyr::pull(cmds)
 
+  # copy docker commands to clipboard
   clipr::write_clip(docker_cmds)
 
 }
+
+utils::globalVariables("package")
+utils::globalVariables("cmds")
 
 create_docker_cmd <- function(pkg, data) {
   is_cran <- ifelse(grepl("CRAN|cran", data$source), TRUE, FALSE)
@@ -43,9 +52,30 @@ create_docker_cmd <- function(pkg, data) {
   docker_init <- "RUN R -e"
 
   if (is_cran) {
-    sprintf('%s devtools::install_version("%s", version = "%s", repos = "https://cran.rstudio.com/")', docker_init, pkg, data$loadedversion)
+    sprintf(
+      "%s \"devtools::install_version('%s', version = '%s', repos = 'https://cran.rstudio.com/')\"",
+      docker_init,
+      pkg,
+      data$version_sp
+    )
   }
   else {
-    sprintf('%s devtools::install_github("%s")', docker_init, github_source)
+    sprintf("%s \"devtools::install_github('%s')\"",
+            docker_init,
+            github_source)
   }
+}
+
+utils::globalVariables("package")
+utils::globalVariables("loadedversion")
+extract_source <- function(path) {
+
+  loaded_pkgs <- read.dcf(path)[,"package"]
+
+
+  loaded_pkgs %>%
+    sessioninfo::package_info() %>%
+    dplyr::filter(package %in% loaded_pkgs) %>%
+    dplyr::select(package, loadedversion, source) %>%
+    dplyr::rename(version_sp = loadedversion)
 }
