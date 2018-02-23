@@ -20,11 +20,9 @@ devtools::install_github("pearsonplc/skelpear")
 
 ## Main functions
 
-1.&nbsp;`project_create()`    
-
-2.&nbsp;`snapshot_pkg()` & `compare_snapshot()` 
-
-3.&nbsp;`docker_snapshot()`
+1. `project_create()`     
+2. `snapshot_pkg()` & `compare_snapshot()`    
+3. `docker_snapshot()`     
 
 ## Goals
 
@@ -32,9 +30,10 @@ devtools::install_github("pearsonplc/skelpear")
 
 #### 1.1 _project_create()_
 
-A function which builds the project skeleton. It will automatically open a new sesion. It contains several pre-defined directories and files. More info about the role of each components in Pearson Efficacy Analytics Handbook. For example,
 
-`project_create(project_name = "example_project", path = ".")`
+A function which builds the project skeleton. It will automatically open a new sesion. It contains several pre-defined directories and files. More info in _Project structure_ section. For example,
+
+`project_create(name = "example_project", path = ".")`
 
 The function automatically initialises `git` environment. Then, to push your project into __bitbucket__, two things have to be done:
 
@@ -74,4 +73,20 @@ __Packages to save__ section lists packages which were detected in your local en
 #### 2.2 _docker_snapshot()_
 
 A function which creates chunk of code with package installation for Dockerfile. It stores those commands in memory. Just paste it (Cmd + V) in Dockerfile.
+
+## Project structure
+
+Once you use `project_name()` function, you will get a new project directory with several pre-defined empty directories and files. Below you can find short description of each component:
+
+->__cache/__ - a directory with cached data objects.     
+->__config/__ - a directory with one file `global.dcf`. It is responsible for all things which happen while opening the `.Rproj` file.        
+->__data/__ - a directory with data files (`.csv`, `.RData` etc.).   
+->__graphs/__ - a directory with created graphs during the project.    
+->__misc/__ - a directory with the rest of relevant files.    
+->__munge/__ - a directory with R scripts with all pre-processing R scripts which are executed while opening the `.Rproj` file.   
+->__reports/__ - a directory with presentations and shiny app.   
+->__sql/__ - a directory with sql queries.     
+->__src/__ - a directory with R scripts related to data analysis.    
+->__.Rprofile__    
+->__project.Rproj__    
 

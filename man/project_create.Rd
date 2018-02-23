@@ -4,11 +4,10 @@
 \alias{project_create}
 \title{Create a new ENR project.}
 \usage{
-project_create(project_name = "enr_project", path = ".")
+project_create(name = "enr_project", path = ".")
 }
 \arguments{
-\item{project_name}{A character vector containing the name for this new
-project. Must be a valid directory name for your file system.}
+\item{name}{A project name. Must be a valid directory name for your file system.}
 
 \item{path}{A path where you want to store your new project.}
 }
@@ -19,6 +18,6 @@ contents.
 }
 \examples{
 
-\dontrun{project_create('new_enr_project', path = "/"}
+\dontrun{project_create(name = "new_enr_project", path = "/"}
 
 }
